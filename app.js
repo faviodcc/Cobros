@@ -70,7 +70,9 @@ const elements = {
   studentForm: document.getElementById("studentForm"),
   settingsForm: document.getElementById("settingsForm"),
   toast: document.getElementById("toast"),
-  sidebar: document.getElementById("sidebar")
+  sidebar: document.getElementById("sidebar"),
+  sidebarOverlay: document.getElementById("sidebarOverlay"),
+  sidebarClose: document.getElementById("sidebarClose")
 };
 
 function loadStudents() {
@@ -225,26 +227,26 @@ function renderTable() {
     const fullName = `${student.firstName} ${student.lastName}`.trim();
 
     row.innerHTML = `
-      <td>
+      <td class="student-cell" data-label="Alumno">
         <span class="student-name">${escapeHtml(fullName)}</span>
         <span class="subtext">DNI: ${escapeHtml(student.dni || "No registrado")}</span>
       </td>
-      <td>${escapeHtml(student.grade)}</td>
-      <td>
+      <td data-label="Grado">${escapeHtml(student.grade)}</td>
+      <td data-label="Apoderado">
         ${escapeHtml(student.guardian)}
         <span class="subtext">${escapeHtml(student.email || "Sin correo")}</span>
       </td>
-      <td>
+      <td data-label="Contacto">
         ${escapeHtml(student.phone)}
         <span class="subtext">Teléfono del apoderado</span>
       </td>
-      <td>
+      <td data-label="Mensualidad">
         <span class="amount">${formatMoney(student.amount)}</span>
         <span class="subtext">${escapeHtml(student.month)}</span>
       </td>
-      <td>${formatDate(student.dueDate)}</td>
-      <td><span class="badge ${status.className}">${status.label}</span></td>
-      <td>
+      <td data-label="Vencimiento">${formatDate(student.dueDate)}</td>
+      <td data-label="Estado"><span class="badge ${status.className}">${status.label}</span></td>
+      <td class="actions-cell" data-label="Acciones">
         <div class="actions">
           ${status.key !== "pagado" ? `<button class="action-button whatsapp" data-action="whatsapp" data-id="${student.id}">WhatsApp</button>` : ""}
           <button class="action-button" data-action="call" data-id="${student.id}">Llamar</button>
@@ -395,13 +397,29 @@ function exportCsv() {
 
 document.getElementById("btnNewStudent").addEventListener("click", openNewStudent);
 document.getElementById("btnOpenSettings").addEventListener("click", () => {
+  closeSidebar();
   document.getElementById("schoolName").value = settings.schoolName;
   document.getElementById("messageTemplate").value = settings.template;
   openModal(elements.settingsModal);
 });
 
 document.getElementById("btnExport").addEventListener("click", exportCsv);
-document.getElementById("menuButton").addEventListener("click", () => elements.sidebar.classList.toggle("open"));
+
+function openSidebar() {
+  elements.sidebar.classList.add("open");
+  elements.sidebarOverlay.classList.add("visible");
+  document.body.classList.add("menu-open");
+}
+
+function closeSidebar() {
+  elements.sidebar.classList.remove("open");
+  elements.sidebarOverlay.classList.remove("visible");
+  document.body.classList.remove("menu-open");
+}
+
+document.getElementById("menuButton").addEventListener("click", openSidebar);
+elements.sidebarClose.addEventListener("click", closeSidebar);
+elements.sidebarOverlay.addEventListener("click", closeSidebar);
 
 elements.searchInput.addEventListener("input", renderTable);
 elements.gradeFilter.addEventListener("change", renderTable);
@@ -519,6 +537,7 @@ document.querySelectorAll(".modal-backdrop").forEach((modal) => {
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") {
     document.querySelectorAll(".modal-backdrop:not(.hidden)").forEach(closeModal);
+    closeSidebar();
   }
 });
 

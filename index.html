@@ -2,14 +2,15 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f766e" />
   <title>Cobranza Escolar</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=2" />
 </head>
 <body>
   <div class="app-shell">
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" aria-label="Menú principal">
+      <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Cerrar menú">×</button>
       <div class="brand">
         <div class="brand-icon">CE</div>
         <div>
@@ -32,6 +33,7 @@
         <p>Esta versión guarda los datos únicamente en este navegador.</p>
       </div>
     </aside>
+    <button class="sidebar-overlay" id="sidebarOverlay" type="button" aria-label="Cerrar menú"></button>
 
     <main class="main-content">
       <header class="topbar">
@@ -230,6 +232,6 @@
 
   <div class="toast hidden" id="toast"></div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>
