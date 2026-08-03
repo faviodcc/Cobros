@@ -1,2817 +1,828 @@
+(() => {
+  "use strict";
 
-const STORAGE_KEY = "kwc_finanzas_students_v1";
-const SETTINGS_KEY = "kwc_finanzas_settings_v1";
+  const config = window.APP_CONFIG || {};
+  const configReady =
+    typeof config.SUPABASE_URL === "string" &&
+    config.SUPABASE_URL.startsWith("https://") &&
+    !config.SUPABASE_URL.includes("PEGA_AQUI") &&
+    typeof config.SUPABASE_PUBLISHABLE_KEY === "string" &&
+    config.SUPABASE_PUBLISHABLE_KEY.length > 20 &&
+    !config.SUPABASE_PUBLISHABLE_KEY.includes("PEGA_AQUI");
 
-const seedStudents = [
-  {
-    "id": "KWC26137",
-    "codigo": "KWC26137",
-    "alumno": "BAIQUE BERROCAL JADER NICOLAS",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "991832417",
-    "telefonoPapa": "987220552",
-    "telefonoPrincipal": "991832417",
-    "telefonoAlterno": "987220552",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26148",
-    "codigo": "KWC26148",
-    "alumno": "BELLIDO URIBE DOMINIC TAKESHI",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "933355742",
-    "telefonoPapa": "976709695",
-    "telefonoPrincipal": "933355742",
-    "telefonoAlterno": "976709695",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26149",
-    "codigo": "KWC26149",
-    "alumno": "BOCANGEL RODRIGUEZ FLAVIA XIANA CAMILA",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "928962961",
-    "telefonoPapa": "910582426",
-    "telefonoPrincipal": "928962961",
-    "telefonoAlterno": "910582426",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26138",
-    "codigo": "KWC26138",
-    "alumno": "GOMERO ROMERO ANDRE ARAMIZ",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "942758366",
-    "telefonoPapa": "981862807",
-    "telefonoPrincipal": "942758366",
-    "telefonoAlterno": "981862807",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26136",
-    "codigo": "KWC26136",
-    "alumno": "HUAMAN QUISPE MARIA FERNANDA",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "929858858",
-    "telefonoPapa": "935591787",
-    "telefonoPrincipal": "929858858",
-    "telefonoAlterno": "935591787",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26151",
-    "codigo": "KWC26151",
-    "alumno": "SANCHEZ HUAMAN GIACOMO ALESSIO",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "950327832",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "950327832",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26152",
-    "codigo": "KWC26152",
-    "alumno": "URETA FARFAN DULCE MARINA SHEYLA",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26145",
-    "codigo": "KWC26145",
-    "alumno": "VALIENTE GOMEZ EVOLET VALENTINA",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26132",
-    "codigo": "KWC26132",
-    "alumno": "VELAZQUE JUAREZ ALEXA KIARA",
-    "aula": "1º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "980655968",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "980655968",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26041",
-    "codigo": "KWC26041",
-    "alumno": "ARONI CORNELIO THIAGO BENJAMIN",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "992102743",
-    "telefonoPapa": "966972915",
-    "telefonoPrincipal": "992102743",
-    "telefonoAlterno": "966972915",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26051",
-    "codigo": "KWC26051",
-    "alumno": "CALDERON OLIVERA NICOLAS DOMINIC",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "951951761",
-    "telefonoPapa": "982880012",
-    "telefonoPrincipal": "951951761",
-    "telefonoAlterno": "982880012",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26050",
-    "codigo": "KWC26050",
-    "alumno": "CARDONA MORENO LUCIANO ABELL",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "923794110",
-    "telefonoPapa": "974231226",
-    "telefonoPrincipal": "923794110",
-    "telefonoAlterno": "974231226",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26042",
-    "codigo": "KWC26042",
-    "alumno": "CHURA LIÑAN ARIANE MARTINA",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "999098905",
-    "telefonoPapa": "966352415",
-    "telefonoPrincipal": "999098905",
-    "telefonoAlterno": "966352415",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26055",
-    "codigo": "KWC26055",
-    "alumno": "DEL AGUILA MENDOZA FATIMA LIZ",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "952047774",
-    "telefonoPapa": "952962433",
-    "telefonoPrincipal": "952047774",
-    "telefonoAlterno": "952962433",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26052",
-    "codigo": "KWC26052",
-    "alumno": "JIMENEZ RIVERA JOSE SANTIAGO VALENTINO",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "969044376",
-    "telefonoPapa": "959620056",
-    "telefonoPrincipal": "969044376",
-    "telefonoAlterno": "959620056",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26044",
-    "codigo": "KWC26044",
-    "alumno": "LIPA POLANCO ANNA ROSA GABRIELLA",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "989723766",
-    "telefonoPapa": "944197707",
-    "telefonoPrincipal": "989723766",
-    "telefonoAlterno": "944197707",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26045",
-    "codigo": "KWC26045",
-    "alumno": "SCHARFF RIOS CATALINA BELEN",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "947099484",
-    "telefonoPapa": "904796887",
-    "telefonoPrincipal": "947099484",
-    "telefonoAlterno": "904796887",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26049",
-    "codigo": "KWC26049",
-    "alumno": "ZAMBRANO JAICO ALESSIA CATALEYA",
-    "aula": "1º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26074",
-    "codigo": "KWC26074",
-    "alumno": "LARES VILCAHUAMAN DANIEL SALVADOR",
-    "aula": "2° Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26154",
-    "codigo": "KWC26154",
-    "alumno": "ALVEAR BARRIENTOS JOAQUIN ORLANDO",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26170",
-    "codigo": "KWC26170",
-    "alumno": "BERDEJO RIVERA ALESSANDRO TEOFILO",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "920281006",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "920281006",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26172",
-    "codigo": "KWC26172",
-    "alumno": "BORDA SILVA JULIAN MANUEL",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "992310069",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "992310069",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26167",
-    "codigo": "KWC26167",
-    "alumno": "BRAVO CHANDUVI DIEGO AARON",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26158",
-    "codigo": "KWC26158",
-    "alumno": "CACERES FLORES MATIAS ISMAEL HENDERSON",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "982811423",
-    "telefonoPapa": "931204008",
-    "telefonoPrincipal": "982811423",
-    "telefonoAlterno": "931204008",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26175",
-    "codigo": "KWC26175",
-    "alumno": "ELIZALDE MOGOLLON EDER SANTIAGO",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26165",
-    "codigo": "KWC26165",
-    "alumno": "FLORES MEDINA VALERIA VALENTINA",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "961435225",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "961435225",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26160",
-    "codigo": "KWC26160",
-    "alumno": "FLORES ROJAS GUSTAVO LEONARDO",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "935403207",
-    "telefonoPapa": "987269287",
-    "telefonoPrincipal": "935403207",
-    "telefonoAlterno": "987269287",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26161",
-    "codigo": "KWC26161",
-    "alumno": "GARCIA GUERRERO ALLISON JULIETH",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26166",
-    "codigo": "KWC26166",
-    "alumno": "PANDURO ROJAS ALEXIA GRACIELA",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "961079312",
-    "telefonoPapa": "959424358",
-    "telefonoPrincipal": "961079312",
-    "telefonoAlterno": "959424358",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26176",
-    "codigo": "KWC26176",
-    "alumno": "SANDOVAL HINOJOSA JAXIEL ALONSO",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26168",
-    "codigo": "KWC26168",
-    "alumno": "TASSO DONAYRE VALENTINA ANTONELLA",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "957350778",
-    "telefonoPapa": "923864917",
-    "telefonoPrincipal": "957350778",
-    "telefonoAlterno": "923864917",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26174",
-    "codigo": "KWC26174",
-    "alumno": "VALENCIA VEGA MIGUEL ADRIAN",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "925174246",
-    "telefonoPapa": "960704051",
-    "telefonoPrincipal": "925174246",
-    "telefonoAlterno": "960704051",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26162",
-    "codigo": "KWC26162",
-    "alumno": "VILLANUEVA CUYOTUPAC JORGE ANDRE",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "915061023",
-    "telefonoPapa": "965931323",
-    "telefonoPrincipal": "915061023",
-    "telefonoAlterno": "965931323",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26169",
-    "codigo": "KWC26169",
-    "alumno": "ÑAUPA LIZA LUANA CAMILA",
-    "aula": "2º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "939890910",
-    "telefonoPapa": "963973567",
-    "telefonoPrincipal": "939890910",
-    "telefonoAlterno": "963973567",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26072",
-    "codigo": "KWC26072",
-    "alumno": "BOCANGEL RODRIGUEZ IAN ALESSANDRO",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "928962961",
-    "telefonoPapa": "910582426",
-    "telefonoPrincipal": "928962961",
-    "telefonoAlterno": "910582426",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26063",
-    "codigo": "KWC26063",
-    "alumno": "CACERES FLORES SOFIA FERNANDA",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "982811423",
-    "telefonoPapa": "931204008",
-    "telefonoPrincipal": "982811423",
-    "telefonoAlterno": "931204008",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26059",
-    "codigo": "KWC26059",
-    "alumno": "CHAVEZ VELAZCO SANTIAGO LIAM",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "994339640",
-    "telefonoPapa": "997554752",
-    "telefonoPrincipal": "994339640",
-    "telefonoAlterno": "997554752",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26240",
-    "codigo": "KWC26240",
-    "alumno": "CUEVA ENRIQUEZ ALESSIA VALENTINA",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26057",
-    "codigo": "KWC26057",
-    "alumno": "HUALPA VEGA LUIS ALEXANDER",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "982512309",
-    "telefonoPapa": "989119099",
-    "telefonoPrincipal": "982512309",
-    "telefonoAlterno": "989119099",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26067",
-    "codigo": "KWC26067",
-    "alumno": "MATTA JUAREZ ALESSIA KAORI",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "900610912",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "900610912",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26068",
-    "codigo": "KWC26068",
-    "alumno": "MONTES VILLANUEVA GABRIEL CALEB",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "924881333",
-    "telefonoPapa": "924856046",
-    "telefonoPrincipal": "924881333",
-    "telefonoAlterno": "924856046",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26060",
-    "codigo": "KWC26060",
-    "alumno": "RIVERO VILLARREAL ZAED ALEJANDRO",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "917709903",
-    "telefonoPapa": "934901175",
-    "telefonoPrincipal": "917709903",
-    "telefonoAlterno": "934901175",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26070",
-    "codigo": "KWC26070",
-    "alumno": "RUEDA ESPINOZA GAEL ELISEO",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "902272566",
-    "telefonoPapa": "970736619",
-    "telefonoPrincipal": "902272566",
-    "telefonoAlterno": "970736619",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26064",
-    "codigo": "KWC26064",
-    "alumno": "VILELA ESTELA  ADRIANAKRISTEL",
-    "aula": "2º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "992212384",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "992212384",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26238",
-    "codigo": "KWC26238",
-    "alumno": "SIFUENTES ROSPIGLIOSI MIGUEL",
-    "aula": "2º año",
-    "mesesPendientes": [
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26242",
-    "codigo": "KWC26242",
-    "alumno": "ALVAREZ LARA CAMILA ELENA",
-    "aula": "3 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "927902239",
-    "telefonoPapa": "910135742",
-    "telefonoPrincipal": "927902239",
-    "telefonoAlterno": "910135742",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26005",
-    "codigo": "KWC26005",
-    "alumno": "BOLIVAR TALANCHA ZOE ANTHONELLA",
-    "aula": "3 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "955149752",
-    "telefonoPapa": "934410780",
-    "telefonoPrincipal": "955149752",
-    "telefonoAlterno": "934410780",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26006",
-    "codigo": "KWC26006",
-    "alumno": "CARDONA MORENO LUCAS ABELL",
-    "aula": "3 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "923794110",
-    "telefonoPapa": "974231226",
-    "telefonoPrincipal": "923794110",
-    "telefonoAlterno": "974231226",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26007",
-    "codigo": "KWC26007",
-    "alumno": "CARHUAS CASTAÑEDA MAYARA MISHELL",
-    "aula": "3 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "935035863",
-    "telefonoPapa": "18602137178",
-    "telefonoPrincipal": "935035863",
-    "telefonoAlterno": "18602137178",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26009",
-    "codigo": "KWC26009",
-    "alumno": "REYES RAZO ARIANA CATALINA",
-    "aula": "3 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "980349094",
-    "telefonoPapa": "932079683",
-    "telefonoPrincipal": "980349094",
-    "telefonoAlterno": "932079683",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26003",
-    "codigo": "KWC26003",
-    "alumno": "SALVADOR ARELLANO JOAQUIN ANGEL",
-    "aula": "3 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "945592024",
-    "telefonoPapa": "961630068",
-    "telefonoPrincipal": "945592024",
-    "telefonoAlterno": "961630068",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26004",
-    "codigo": "KWC26004",
-    "alumno": "ÑAUPA NAVARRO MARIAFE ANTONELLA",
-    "aula": "3 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "930664840",
-    "telefonoPapa": "997414355",
-    "telefonoPrincipal": "930664840",
-    "telefonoAlterno": "997414355",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26196",
-    "codigo": "KWC26196",
-    "alumno": "BARRERA TICONA DAYLA SOL",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "935992092",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "935992092",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26187",
-    "codigo": "KWC26187",
-    "alumno": "ESPINO CHACON LINVER ADRIANO GIOVANI",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "997770354",
-    "telefonoPapa": "924083192",
-    "telefonoPrincipal": "997770354",
-    "telefonoAlterno": "924083192",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26241",
-    "codigo": "KWC26241",
-    "alumno": "FARRO PEREZ JUAN MIGUEL",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26185",
-    "codigo": "KWC26185",
-    "alumno": "GOMERO ROMERO GABRIEL AARON",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "942758366",
-    "telefonoPapa": "981862807",
-    "telefonoPrincipal": "942758366",
-    "telefonoAlterno": "981862807",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26186",
-    "codigo": "KWC26186",
-    "alumno": "GOMEZ MEZA IAN FABRIZZIO",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "994855733",
-    "telefonoPapa": "992343711",
-    "telefonoPrincipal": "994855733",
-    "telefonoAlterno": "992343711",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26193",
-    "codigo": "KWC26193",
-    "alumno": "GUTIERREZ ANAMPA JOSUE JUNSEO",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "940569562",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "940569562",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26194",
-    "codigo": "KWC26194",
-    "alumno": "GUZMAN VERGARA ADRIANO STEPHANO",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "992249432",
-    "telefonoPapa": "998232063",
-    "telefonoPrincipal": "992249432",
-    "telefonoAlterno": "998232063",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26191",
-    "codigo": "KWC26191",
-    "alumno": "MARTINEZ SILUPU NAYRA DEL MILAGRO",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "906023767",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "906023767",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26181",
-    "codigo": "KWC26181",
-    "alumno": "MUNOZ LOZANO NICOLAS ADRIAN",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "914285043",
-    "telefonoPapa": "914292041",
-    "telefonoPrincipal": "914285043",
-    "telefonoAlterno": "914292041",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26183",
-    "codigo": "KWC26183",
-    "alumno": "OCHOA LOPEZ ABDUL JEAN PIER",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "960243690",
-    "telefonoPapa": "998155578",
-    "telefonoPrincipal": "960243690",
-    "telefonoAlterno": "998155578",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26177",
-    "codigo": "KWC26177",
-    "alumno": "RAMIREZ VASQUEZ ARIANNA KAMYL",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "997671522",
-    "telefonoPapa": "986612127",
-    "telefonoPrincipal": "997671522",
-    "telefonoAlterno": "986612127",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26192",
-    "codigo": "KWC26192",
-    "alumno": "SALAZAR BOCANEGRA ARIANA ALEXANDRA",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "926979958",
-    "telefonoPapa": "905434314",
-    "telefonoPrincipal": "926979958",
-    "telefonoAlterno": "905434314",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26184",
-    "codigo": "KWC26184",
-    "alumno": "SANDOVAL PECEROS ENZO PAOLO",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "922050911",
-    "telefonoPapa": "955060076",
-    "telefonoPrincipal": "922050911",
-    "telefonoAlterno": "955060076",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26195",
-    "codigo": "KWC26195",
-    "alumno": "TAMARIZ SALVADOR SAMUEL ENRIQUE",
-    "aula": "3º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "924020308",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "924020308",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26080",
-    "codigo": "KWC26080",
-    "alumno": "ALFARO GAMBOA ANA LUCIA",
-    "aula": "3º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "980932408",
-    "telefonoPrincipal": "980932408",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26082",
-    "codigo": "KWC26082",
-    "alumno": "ARELLANO PANCORBO ITHAM FABRIZIO",
-    "aula": "3º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26077",
-    "codigo": "KWC26077",
-    "alumno": "FERNANDEZ BARRERA STEPHANIE DANNAE",
-    "aula": "3º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "940193988",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "940193988",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26079",
-    "codigo": "KWC26079",
-    "alumno": "LEVANO LOZANO SANTIAGO PAOLO",
-    "aula": "3º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "914285043",
-    "telefonoPapa": "914292041",
-    "telefonoPrincipal": "914285043",
-    "telefonoAlterno": "914292041",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26086",
-    "codigo": "KWC26086",
-    "alumno": "MORE CHERO HARUMI CRISTEL",
-    "aula": "3º Grado",
-    "mesesPendientes": [
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "945520933",
-    "telefonoPapa": "922569893",
-    "telefonoPrincipal": "945520933",
-    "telefonoAlterno": "922569893",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26087",
-    "codigo": "KWC26087",
-    "alumno": "QUIPUSCO QUISPE EMMA VALENTINA",
-    "aula": "3º Grado",
-    "mesesPendientes": [
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26085",
-    "codigo": "KWC26085",
-    "alumno": "VALIENTE GOMEZ ARIANA CATALEYA",
-    "aula": "3º Grado",
-    "mesesPendientes": [
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26021",
-    "codigo": "KWC26021",
-    "alumno": "AUSEJO BAZAN THAISA ALESSANDRA",
-    "aula": "4 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26015",
-    "codigo": "KWC26015",
-    "alumno": "BOLAÑOS SICLLA ALESSANDRA VANESSA",
-    "aula": "4 Años",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "970874073",
-    "telefonoPapa": "960102458",
-    "telefonoPrincipal": "970874073",
-    "telefonoAlterno": "960102458",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26016",
-    "codigo": "KWC26016",
-    "alumno": "CALDERON BUITRON CHLOE SOLANNA",
-    "aula": "4 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "918462027",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "918462027",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26020",
-    "codigo": "KWC26020",
-    "alumno": "GONZALES HERRERA DOMINIC DEMER",
-    "aula": "4 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "902213604",
-    "telefonoPapa": "935393630",
-    "telefonoPrincipal": "902213604",
-    "telefonoAlterno": "935393630",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26017",
-    "codigo": "KWC26017",
-    "alumno": "OCHOA BAUTISTA AYTANA VALERY",
-    "aula": "4 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "938152353",
-    "telefonoPapa": "955246762",
-    "telefonoPrincipal": "938152353",
-    "telefonoAlterno": "955246762",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26018",
-    "codigo": "KWC26018",
-    "alumno": "PEREYRA MELGAREJO JAAZIEL MARDEN",
-    "aula": "4 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26011",
-    "codigo": "KWC26011",
-    "alumno": "VASQUEZ VILCAPUMA LIAM MOISES",
-    "aula": "4 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "981261799",
-    "telefonoPapa": "922467279",
-    "telefonoPrincipal": "981261799",
-    "telefonoAlterno": "922467279",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26213",
-    "codigo": "KWC26213",
-    "alumno": "CARDENAS APONTE CARLO FABRIZZIO",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "970274562",
-    "telefonoPapa": "971287970",
-    "telefonoPrincipal": "970274562",
-    "telefonoAlterno": "971287970",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26239",
-    "codigo": "KWC26239",
-    "alumno": "CHOTA DE LA TORRE ADRIAN EDUARDO",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26214",
-    "codigo": "KWC26214",
-    "alumno": "DEL AGUILA MENDOZA BELEN LIZ",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "952047774",
-    "telefonoPapa": "952962433",
-    "telefonoPrincipal": "952047774",
-    "telefonoAlterno": "952962433",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26198",
-    "codigo": "KWC26198",
-    "alumno": "DIAZ CORDOVA SAMI ICHIRO",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "978673649",
-    "telefonoPapa": "936750260",
-    "telefonoPrincipal": "978673649",
-    "telefonoAlterno": "936750260",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26215",
-    "codigo": "KWC26215",
-    "alumno": "GARAY TORRE FRANCO MATIAS",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26212",
-    "codigo": "KWC26212",
-    "alumno": "GARMA TORRE RAFAEL DAVID",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "960768489",
-    "telefonoPapa": "934915706",
-    "telefonoPrincipal": "960768489",
-    "telefonoAlterno": "934915706",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26204",
-    "codigo": "KWC26204",
-    "alumno": "GOMEZ ARROYO ZHIARA SELENA",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "964770095",
-    "telefonoPapa": "935987069",
-    "telefonoPrincipal": "964770095",
-    "telefonoAlterno": "935987069",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26202",
-    "codigo": "KWC26202",
-    "alumno": "HUASACCA HUARACA VALENTINA",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "993059853",
-    "telefonoPapa": "945193803",
-    "telefonoPrincipal": "993059853",
-    "telefonoAlterno": "945193803",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26209",
-    "codigo": "KWC26209",
-    "alumno": "MAMANI CLAUDIO GENESIS SARAI",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "927928564",
-    "telefonoPapa": "955237549",
-    "telefonoPrincipal": "927928564",
-    "telefonoAlterno": "955237549",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26217",
-    "codigo": "KWC26217",
-    "alumno": "POZZI NUÑEZ LUCIANA MICAELA",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26200",
-    "codigo": "KWC26200",
-    "alumno": "ROJAS PEREZ SOFIA VALENTINA",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "953073243",
-    "telefonoPapa": "920680968",
-    "telefonoPrincipal": "953073243",
-    "telefonoAlterno": "920680968",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26216",
-    "codigo": "KWC26216",
-    "alumno": "URETA FARFAN JUAN JOSE",
-    "aula": "4º Año",
-    "mesesPendientes": [
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26094",
-    "codigo": "KWC26094",
-    "alumno": "BOLAÑOS SICLLA STEPHANO LUCCIANO",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "970874073",
-    "telefonoPapa": "960102458",
-    "telefonoPrincipal": "970874073",
-    "telefonoAlterno": "960102458",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26096",
-    "codigo": "KWC26096",
-    "alumno": "CASTRO MORALES YERIK UZIEL",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "926196379",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "926196379",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26099",
-    "codigo": "KWC26099",
-    "alumno": "DEL CARPIO PORTURAS GIANLUCA",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Marzo",
-      "Abril",
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "924173684",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "924173684",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26095",
-    "codigo": "KWC26095",
-    "alumno": "GARAYCOCHEA EURIBE YVANNA VICTORIA",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "994155495",
-    "telefonoPapa": "994153787",
-    "telefonoPrincipal": "994155495",
-    "telefonoAlterno": "994153787",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26103",
-    "codigo": "KWC26103",
-    "alumno": "GUTIERREZ ANAMPA EVANT MOISES",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "940569562",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "940569562",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26088",
-    "codigo": "KWC26088",
-    "alumno": "HUALPA VEGA ADRIAN EDUARDO",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "982512309",
-    "telefonoPapa": "989119099",
-    "telefonoPrincipal": "982512309",
-    "telefonoAlterno": "989119099",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26102",
-    "codigo": "KWC26102",
-    "alumno": "LARES VILCAHUAMAN VALENTINA DANIELA",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "913837399",
-    "telefonoPapa": "987733334",
-    "telefonoPrincipal": "913837399",
-    "telefonoAlterno": "987733334",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26091",
-    "codigo": "KWC26091",
-    "alumno": "LI HUANCA VALENTINA DOROTHY",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "965607871",
-    "telefonoPapa": "965604171",
-    "telefonoPrincipal": "965607871",
-    "telefonoAlterno": "965604171",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26092",
-    "codigo": "KWC26092",
-    "alumno": "PANDURO ROJAS JOAO ALEXANDER",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "949424358",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "949424358",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26098",
-    "codigo": "KWC26098",
-    "alumno": "TERRONES URBIETTA AMY LUCIANA",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26090",
-    "codigo": "KWC26090",
-    "alumno": "VELAZQUE JUAREZ BRIANNA BRISSETTE",
-    "aula": "4º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "980655968",
-    "telefonoPapa": "950207333",
-    "telefonoPrincipal": "980655968",
-    "telefonoAlterno": "950207333",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26028",
-    "codigo": "KWC26028",
-    "alumno": "ARELLANO PANCORBO SALOMON JARED",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26036",
-    "codigo": "KWC26036",
-    "alumno": "DELGADO VELAZQUE RAUL MOISES",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "924847192",
-    "telefonoPapa": "984208779",
-    "telefonoPrincipal": "924847192",
-    "telefonoAlterno": "984208779",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26034",
-    "codigo": "KWC26034",
-    "alumno": "DIAZ QUISPE SEBASTIAN AARON",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "960191374",
-    "telefonoPapa": "982473169",
-    "telefonoPrincipal": "960191374",
-    "telefonoAlterno": "982473169",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26027",
-    "codigo": "KWC26027",
-    "alumno": "ESPINOZA SALVADOR ESTEBAN ALESSANDRO",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "932477493",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "932477493",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26032",
-    "codigo": "KWC26032",
-    "alumno": "ISAIAS BARRIOS KEYLA MICHELLE",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "961883917",
-    "telefonoPapa": "930843200",
-    "telefonoPrincipal": "961883917",
-    "telefonoAlterno": "930843200",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26031",
-    "codigo": "KWC26031",
-    "alumno": "MATTA JUAREZ BRIANNA ANTONELLA",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "900610912",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "900610912",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26024",
-    "codigo": "KWC26024",
-    "alumno": "VELAZQUE JUAREZ CALEB LIONEL",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26029",
-    "codigo": "KWC26029",
-    "alumno": "VICARIO DUEÑAS SEBASTIAN",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "900930890",
-    "telefonoPapa": "967636363",
-    "telefonoPrincipal": "900930890",
-    "telefonoAlterno": "967636363",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26035",
-    "codigo": "KWC26035",
-    "alumno": "ZAFRA VASQUEZ NOAH VALENTIN",
-    "aula": "5 Años",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "989093773",
-    "telefonoPapa": "954347902",
-    "telefonoPrincipal": "989093773",
-    "telefonoAlterno": "954347902",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26221",
-    "codigo": "KWC26221",
-    "alumno": "ALARCON GUILLEN AMIR GIANCARLO",
-    "aula": "5º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "992875209",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "992875209",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26222",
-    "codigo": "KWC26222",
-    "alumno": "CHEN CHEN JIA YING",
-    "aula": "5º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "998972122",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "998972122",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26234",
-    "codigo": "KWC26234",
-    "alumno": "FERRARI VENTURA IRMA DEL PILAR",
-    "aula": "5º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "931685507",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "931685507",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26232",
-    "codigo": "KWC26232",
-    "alumno": "PLANCK LOPEZ SALMA LUANA SYLVIE",
-    "aula": "5º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "915221072",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "915221072",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26231",
-    "codigo": "KWC26231",
-    "alumno": "TORRES QUISPE ALEXANDER ENRIQUE",
-    "aula": "5º Año",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "985464882",
-    "telefonoPapa": "936167926",
-    "telefonoPrincipal": "985464882",
-    "telefonoAlterno": "936167926",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26233",
-    "codigo": "KWC26233",
-    "alumno": "URUCHI SOTO EDGAR LEONEL FABIANO",
-    "aula": "5º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "921803901",
-    "telefonoPapa": "925452422",
-    "telefonoPrincipal": "921803901",
-    "telefonoAlterno": "925452422",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26228",
-    "codigo": "KWC26228",
-    "alumno": "VASQUEZ SORIANO MARCELO FABIAN",
-    "aula": "5º Año",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26235",
-    "codigo": "KWC26235",
-    "alumno": "VILLEGAS QUENTA XABI MATIAS",
-    "aula": "5º Año",
-    "mesesPendientes": [
-      "Mayo",
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26107",
-    "codigo": "KWC26107",
-    "alumno": "ALARCON GUILLEN ANDRE",
-    "aula": "5º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26106",
-    "codigo": "KWC26106",
-    "alumno": "CACERES FLORES NICOLAS GEORGE",
-    "aula": "5º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "982811423",
-    "telefonoPapa": "931204008",
-    "telefonoPrincipal": "982811423",
-    "telefonoAlterno": "931204008",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26109",
-    "codigo": "KWC26109",
-    "alumno": "CANO ESPINOZA MANUEL EDUARDO GAEL",
-    "aula": "5º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "977238283",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "977238283",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26115",
-    "codigo": "KWC26115",
-    "alumno": "MAR SILVA VALENTINO IAN",
-    "aula": "5º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "907746949",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "907746949",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26111",
-    "codigo": "KWC26111",
-    "alumno": "PANDURO PEREZ EVANS KALED",
-    "aula": "5º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "924006510",
-    "telefonoPapa": "994780680",
-    "telefonoPrincipal": "924006510",
-    "telefonoAlterno": "994780680",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26114",
-    "codigo": "KWC26114",
-    "alumno": "SANDOVAL RETAMOZO PATRICK MAURICIO",
-    "aula": "5º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "932186627",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "932186627",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26117",
-    "codigo": "KWC26117",
-    "alumno": "VALENCIA VEGA GABRIELLA LILIANA",
-    "aula": "5º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "925174246",
-    "telefonoPapa": "960704051",
-    "telefonoPrincipal": "925174246",
-    "telefonoAlterno": "960704051",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26125",
-    "codigo": "KWC26125",
-    "alumno": "ALARCON GUILLEN ISAAC GIANCARLO",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "992875209",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "992875209",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26128",
-    "codigo": "KWC26128",
-    "alumno": "ALFARO BAZAN OZDMAN ZAYET ALI",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26130",
-    "codigo": "KWC26130",
-    "alumno": "ARANGO CACERES DAYLIN YURY",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Marzo",
-      "Abril",
-      "Mayo"
-    ],
-    "telefonoMama": "947009182",
-    "telefonoPapa": "978794939",
-    "telefonoPrincipal": "947009182",
-    "telefonoAlterno": "978794939",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26124",
-    "codigo": "KWC26124",
-    "alumno": "CARRILLO SULLCA ANDREA YSABEL",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "941506116",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "941506116",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26129",
-    "codigo": "KWC26129",
-    "alumno": "LARES VILCAHUAMAN DANIEL ANDRES",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "913837399",
-    "telefonoPapa": "987733334",
-    "telefonoPrincipal": "913837399",
-    "telefonoAlterno": "987733334",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26121",
-    "codigo": "KWC26121",
-    "alumno": "PANDURO ROJAS FLAVIA PAULA",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Junio",
-      "Julio"
-    ],
-    "telefonoMama": "949424358",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "949424358",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26126",
-    "codigo": "KWC26126",
-    "alumno": "RAMIREZ FRANCO FABIANA KRYSTEL",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "980545697",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "980545697",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26127",
-    "codigo": "KWC26127",
-    "alumno": "REYES MUNAYLLA JOSE VASCO",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "972885353",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "972885353",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  },
-  {
-    "id": "KWC26118",
-    "codigo": "KWC26118",
-    "alumno": "RIVERO GARCIA MARIANGEL SOPHIA",
-    "aula": "6º Grado",
-    "mesesPendientes": [
-      "Julio"
-    ],
-    "telefonoMama": "913419116",
-    "telefonoPapa": "",
-    "telefonoPrincipal": "913419116",
-    "telefonoAlterno": "",
-    "notas": "",
-    "regularizado": false,
-    "ultimoRecordatorio": ""
-  }
-];
-
-const defaultTemplate = `Hola 👋
-
-Le saludamos de {colegio}.
-
-Le informamos que el(la) estudiante {alumno}, código {codigo}, del aula {aula}, presenta cuotas pendientes correspondientes a los meses de {meses}.
-
-Puede realizar el pago siguiendo esta guía:
-{guia_pago}
-
-Si ya realizó el pago, por favor omita este mensaje.
-
-Muchas gracias.`;
-
-let students = loadStudents();
-let settings = loadSettings();
-let toastTimer;
-
-const elements = {
-  tableBody: document.getElementById("studentsTableBody"),
-  emptyState: document.getElementById("emptyState"),
-  tableWrap: document.getElementById("tableWrap"),
-  searchInput: document.getElementById("searchInput"),
-  gradeFilter: document.getElementById("gradeFilter"),
-  statusFilter: document.getElementById("statusFilter"),
-  contactFilter: document.getElementById("contactFilter"),
-  studentModal: document.getElementById("studentModal"),
-  settingsModal: document.getElementById("settingsModal"),
-  studentForm: document.getElementById("studentForm"),
-  settingsForm: document.getElementById("settingsForm"),
-  toast: document.getElementById("toast"),
-  sidebar: document.getElementById("sidebar"),
-  sidebarOverlay: document.getElementById("sidebarOverlay"),
-  sidebarClose: document.getElementById("sidebarClose"),
-  guideLinkButton: document.getElementById("guideLinkButton")
-};
-
-function getDefaultGuideUrl() {
-  const path = window.location.pathname;
-  const basePath = path.endsWith("/") ? path : path.substring(0, path.lastIndexOf("/") + 1);
-  return `${window.location.origin}${basePath}assets/guia-pago-bcp.jpg`;
-}
-
-function loadStudents() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (!saved) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(seedStudents));
-    return structuredClone(seedStudents);
-  }
-
-  try {
-    const parsed = JSON.parse(saved);
-    return Array.isArray(parsed) ? parsed : structuredClone(seedStudents);
-  } catch {
-    return structuredClone(seedStudents);
-  }
-}
-
-function loadSettings() {
-  const defaults = {
-    schoolName: "KAROL WOJTYLA COLLEGE",
-    guideUrl: getDefaultGuideUrl(),
-    template: defaultTemplate
+  const el = {
+    loginScreen: document.getElementById("loginScreen"),
+    loginForm: document.getElementById("loginForm"),
+    loginEmail: document.getElementById("loginEmail"),
+    loginPassword: document.getElementById("loginPassword"),
+    loginButton: document.getElementById("loginButton"),
+    loginMessage: document.getElementById("loginMessage"),
+    setupAlert: document.getElementById("setupAlert"),
+    appShell: document.getElementById("appShell"),
+    sidebar: document.getElementById("sidebar"),
+    sidebarOverlay: document.getElementById("sidebarOverlay"),
+    sidebarClose: document.getElementById("sidebarClose"),
+    menuButton: document.getElementById("menuButton"),
+    userEmail: document.getElementById("userEmail"),
+    logoutButton: document.getElementById("logoutButton"),
+    settingsButton: document.getElementById("settingsButton"),
+    newStudentButton: document.getElementById("newStudentButton"),
+    exportButton: document.getElementById("exportButton"),
+    searchInput: document.getElementById("searchInput"),
+    statusFilter: document.getElementById("statusFilter"),
+    contactFilter: document.getElementById("contactFilter"),
+    selectAllCheckbox: document.getElementById("selectAllCheckbox"),
+    selectVisibleButton: document.getElementById("selectVisibleButton"),
+    clearSelectionButton: document.getElementById("clearSelectionButton"),
+    sendSelectedButton: document.getElementById("sendSelectedButton"),
+    selectedCount: document.getElementById("selectedCount"),
+    studentsBody: document.getElementById("studentsBody"),
+    tableWrap: document.getElementById("tableWrap"),
+    emptyState: document.getElementById("emptyState"),
+    studentModal: document.getElementById("studentModal"),
+    studentModalTitle: document.getElementById("studentModalTitle"),
+    studentForm: document.getElementById("studentForm"),
+    studentId: document.getElementById("studentId"),
+    studentName: document.getElementById("studentName"),
+    motherPhone: document.getElementById("motherPhone"),
+    fatherPhone: document.getElementById("fatherPhone"),
+    pendingMonths: document.getElementById("pendingMonths"),
+    studentNotes: document.getElementById("studentNotes"),
+    settingsModal: document.getElementById("settingsModal"),
+    settingsForm: document.getElementById("settingsForm"),
+    schoolName: document.getElementById("schoolName"),
+    messageTemplate: document.getElementById("messageTemplate"),
+    messagePreview: document.getElementById("messagePreview"),
+    queueModal: document.getElementById("queueModal"),
+    queueProgress: document.getElementById("queueProgress"),
+    queueStudentName: document.getElementById("queueStudentName"),
+    queueRecipient: document.getElementById("queueRecipient"),
+    queueMessagePreview: document.getElementById("queueMessagePreview"),
+    queuePreviousButton: document.getElementById("queuePreviousButton"),
+    queueOpenWhatsAppButton: document.getElementById("queueOpenWhatsAppButton"),
+    queueNextButton: document.getElementById("queueNextButton"),
+    toast: document.getElementById("toast")
   };
 
-  const saved = localStorage.getItem(SETTINGS_KEY);
-  if (!saved) return defaults;
+  let db = null;
+  let session = null;
+  let students = [];
+  let appSettings = {
+    school_name: "KAROL WOJTYLA COLLEGE",
+    message_template:
+      "¡Hola! 👋\n\nLe saludamos de {colegio}.\n\nLe informamos que el/la estudiante {alumno} presenta cuotas pendientes correspondientes {periodo}.\n\nAgradeceremos regularizar los pagos pendientes.\n\nSi ya realizó el pago, por favor omita este mensaje.\n\nMuchas gracias."
+  };
+  let selectedIds = new Set();
+  let toastTimer = null;
+  let queueItems = [];
+  let queueIndex = 0;
 
-  try {
-    return { ...defaults, ...JSON.parse(saved) };
-  } catch {
-    return defaults;
-  }
-}
-
-function saveStudents() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(students));
-}
-
-function saveSettings() {
-  localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-}
-
-function escapeHtml(value = "") {
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-}
-
-function cleanPhone(value = "") {
-  return String(value || "").replace(/\D/g, "");
-}
-
-function validatePhone(value) {
-  const digits = cleanPhone(value);
-  return !digits || (digits.length >= 9 && digits.length <= 15);
-}
-
-function normalizeWhatsAppPhone(value) {
-  let digits = cleanPhone(value);
-  if (digits.length === 9) digits = `51${digits}`;
-  return digits;
-}
-
-function titleCaseWords(text = "") {
-  return text
-    .toLowerCase()
-    .split(" ")
-    .filter(Boolean)
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-function joinList(items = []) {
-  const clean = items.map((item) => String(item).trim()).filter(Boolean);
-  if (clean.length === 0) return "";
-  if (clean.length === 1) return clean[0];
-  if (clean.length === 2) return `${clean[0]} y ${clean[1]}`;
-  return `${clean.slice(0, -1).join(", ")} y ${clean.at(-1)}`;
-}
-
-function parseMonthsInput(value = "") {
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean)
-    .map((item) => titleCaseWords(item));
-}
-
-function getStatus(student) {
-  if (student.regularizado || !student.mesesPendientes?.length) {
-    return { key: "regularizado", label: "Regularizado", className: "ok" };
+  function escapeHtml(value = "") {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
-  if (!student.telefonoPrincipal) {
-    return { key: "sin-telefono", label: "Sin teléfono", className: "no-phone" };
+  function cleanPhone(value = "") {
+    return String(value || "").replace(/\D/g, "");
   }
 
-  return { key: "pendiente", label: "Pendiente", className: "pending" };
-}
+  function normalizeWhatsAppPhone(value = "") {
+    let digits = cleanPhone(value);
+    if (digits.length === 9) digits = `51${digits}`;
+    return digits;
+  }
 
-function getContactSummary(student) {
-  const phones = [];
-  if (student.telefonoMama) phones.push(`Mamá: ${student.telefonoMama}`);
-  if (student.telefonoPapa) phones.push(`Papá: ${student.telefonoPapa}`);
-  return phones.length ? phones.join(" · ") : "Sin teléfono registrado";
-}
+  function isValidPhone(value = "") {
+    const digits = cleanPhone(value);
+    return !digits || (digits.length >= 9 && digits.length <= 15);
+  }
 
-function render() {
-  renderGrades();
-  renderStats();
-  renderTable();
-  syncGuidePreview();
-}
+  function parseMonths(value = "") {
+    return String(value)
+      .replace(/\s+y\s+/gi, ",")
+      .split(",")
+      .map((month) => month.trim())
+      .filter(Boolean)
+      .map((month) => month.charAt(0).toUpperCase() + month.slice(1).toLowerCase());
+  }
 
-function renderStats() {
-  const pending = students.filter((student) => !student.regularizado && student.mesesPendientes?.length);
-  const withPhone = pending.filter((student) => student.telefonoPrincipal).length;
-  const regularized = students.filter((student) => student.regularizado || !student.mesesPendientes?.length).length;
-  const multipleMonths = pending.filter((student) => student.mesesPendientes.length > 1).length;
+  function joinNatural(items = []) {
+    const clean = items.map((item) => String(item).trim()).filter(Boolean);
+    if (clean.length === 0) return "";
+    if (clean.length === 1) return clean[0];
+    if (clean.length === 2) return `${clean[0]} y ${clean[1]}`;
+    return `${clean.slice(0, -1).join(", ")} y ${clean.at(-1)}`;
+  }
 
-  document.getElementById("statPending").textContent = pending.length;
-  document.getElementById("statWithPhone").textContent = withPhone;
-  document.getElementById("statMultipleMonths").textContent = multipleMonths;
-  document.getElementById("statRegularized").textContent = regularized;
-}
+  function getPeriodText(months = []) {
+    if (months.length === 1) return `al mes de ${months[0]}`;
+    return `a los meses de ${joinNatural(months)}`;
+  }
 
-function renderGrades() {
-  const selected = elements.gradeFilter.value;
-  const grades = [...new Set(students.map((student) => student.aula.trim()).filter(Boolean))]
-    .sort((a, b) => a.localeCompare(b, "es"));
+  function formatDateTime(value) {
+    if (!value) return "No registrado";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "No registrado";
+    return new Intl.DateTimeFormat("es-PE", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
+    }).format(date);
+  }
 
-  elements.gradeFilter.innerHTML = '<option value="">Todas las aulas</option>';
-  grades.forEach((grade) => {
-    const option = document.createElement("option");
-    option.value = grade;
-    option.textContent = grade;
-    elements.gradeFilter.appendChild(option);
-  });
-  elements.gradeFilter.value = grades.includes(selected) ? selected : "";
-}
+  function showToast(message) {
+    clearTimeout(toastTimer);
+    el.toast.textContent = message;
+    el.toast.classList.remove("hidden");
+    toastTimer = setTimeout(() => el.toast.classList.add("hidden"), 3000);
+  }
 
-function getFilteredStudents() {
-  const query = elements.searchInput.value.trim().toLowerCase();
-  const grade = elements.gradeFilter.value;
-  const status = elements.statusFilter.value;
-  const contact = elements.contactFilter.value;
-
-  return students.filter((student) => {
-    const state = getStatus(student).key;
-    const searchable = [
-      student.codigo,
-      student.alumno,
-      student.aula,
-      student.telefonoMama,
-      student.telefonoPapa,
-      joinList(student.mesesPendientes),
-      student.notas
-    ].join(" ").toLowerCase();
-
-    const matchesQuery = !query || searchable.includes(query);
-    const matchesGrade = !grade || student.aula === grade;
-    const matchesStatus = !status || state === status;
-    const hasPhone = !!student.telefonoPrincipal;
-    const matchesContact = !contact || (contact === "con-telefono" ? hasPhone : !hasPhone);
-    return matchesQuery && matchesGrade && matchesStatus && matchesContact;
-  });
-}
-
-function renderTable() {
-  const filtered = getFilteredStudents();
-  elements.tableBody.innerHTML = "";
-
-  const hasRows = filtered.length > 0;
-  elements.emptyState.classList.toggle("hidden", hasRows);
-  elements.tableWrap.classList.toggle("hidden", !hasRows);
-
-  filtered.forEach((student) => {
-    const status = getStatus(student);
-    const months = student.mesesPendientes || [];
-    const row = document.createElement("tr");
-
-    const whatsappButtons = [];
-    if (!student.regularizado && student.telefonoMama) {
-      whatsappButtons.push(`<button class="action-button whatsapp" data-action="whatsapp-mom" data-id="${student.id}">WhatsApp mamá</button>`);
+  function setLoading(button, loading, text) {
+    if (!button) return;
+    if (loading) {
+      button.dataset.originalText = button.textContent;
+      button.textContent = text || "Procesando...";
+      button.disabled = true;
+    } else {
+      button.textContent = button.dataset.originalText || button.textContent;
+      button.disabled = false;
     }
-    if (!student.regularizado && !student.telefonoMama && student.telefonoPrincipal) {
-      whatsappButtons.push(`<button class="action-button whatsapp" data-action="whatsapp-main" data-id="${student.id}">WhatsApp</button>`);
+  }
+
+  function openModal(modal) {
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeModal(modal) {
+    modal.classList.add("hidden");
+    document.body.style.overflow = "";
+  }
+
+  function openSidebar() {
+    el.sidebar.classList.add("open");
+    el.sidebarOverlay.classList.add("visible");
+  }
+
+  function closeSidebar() {
+    el.sidebar.classList.remove("open");
+    el.sidebarOverlay.classList.remove("visible");
+  }
+
+  function showLogin(message = "") {
+    el.loginScreen.classList.remove("hidden");
+    el.appShell.classList.add("hidden");
+    el.loginMessage.textContent = message;
+  }
+
+  function showApp() {
+    el.loginScreen.classList.add("hidden");
+    el.appShell.classList.remove("hidden");
+    el.userEmail.textContent = session?.user?.email || "Usuario autorizado";
+  }
+
+  function buildMessage(student) {
+    const replacements = {
+      "{colegio}": appSettings.school_name,
+      "{alumno}": student.full_name,
+      "{periodo}": getPeriodText(student.pending_months || [])
+    };
+
+    let message = appSettings.message_template;
+    for (const [token, value] of Object.entries(replacements)) {
+      message = message.replaceAll(token, value);
     }
-    if (!student.regularizado && student.telefonoPapa) {
-      whatsappButtons.push(`<button class="action-button whatsapp" data-action="whatsapp-dad" data-id="${student.id}">WhatsApp papá</button>`);
+    return message;
+  }
+
+  function updateMessagePreview() {
+    const draft = {
+      school_name: el.schoolName.value.trim() || "KAROL WOJTYLA COLLEGE",
+      message_template: el.messageTemplate.value || appSettings.message_template
+    };
+    const sample = {
+      full_name: "NOMBRE DEL ALUMNO",
+      pending_months: ["Abril", "Mayo", "Julio"]
+    };
+    let message = draft.message_template
+      .replaceAll("{colegio}", draft.school_name)
+      .replaceAll("{alumno}", sample.full_name)
+      .replaceAll("{periodo}", getPeriodText(sample.pending_months));
+    el.messagePreview.textContent = message;
+  }
+
+  async function verifyAuthorizedStaff() {
+    const { data, error } = await db
+      .from("staff_users")
+      .select("user_id, full_name, role, active")
+      .eq("user_id", session.user.id)
+      .maybeSingle();
+
+    if (error) throw error;
+    if (!data || !data.active) {
+      await db.auth.signOut();
+      throw new Error("Tu usuario no está autorizado para acceder a esta base.");
+    }
+    return data;
+  }
+
+  async function loadSettings() {
+    const { data, error } = await db
+      .from("app_settings")
+      .select("school_name, message_template")
+      .eq("id", 1)
+      .single();
+    if (error) throw error;
+    appSettings = data;
+  }
+
+  async function loadStudents() {
+    const { data, error } = await db
+      .from("students")
+      .select("id, full_name, pending_months, mother_phone, father_phone, status, notes, last_reminder_at, created_at, updated_at")
+      .order("full_name", { ascending: true });
+
+    if (error) throw error;
+    students = data || [];
+    selectedIds = new Set([...selectedIds].filter((id) => students.some((student) => student.id === id)));
+    renderAll();
+  }
+
+  async function initializeApp() {
+    try {
+      showApp();
+      await verifyAuthorizedStaff();
+      await Promise.all([loadSettings(), loadStudents()]);
+    } catch (error) {
+      console.error(error);
+      showLogin(error.message || "No fue posible cargar el sistema.");
+    }
+  }
+
+  function getFilteredStudents() {
+    const query = el.searchInput.value.trim().toLowerCase();
+    const status = el.statusFilter.value;
+    const contact = el.contactFilter.value;
+
+    return students.filter((student) => {
+      const hasPhone = Boolean(cleanPhone(student.mother_phone) || cleanPhone(student.father_phone));
+      const searchable = [
+        student.full_name,
+        student.mother_phone,
+        student.father_phone,
+        ...(student.pending_months || []),
+        student.notes
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      const matchesQuery = !query || searchable.includes(query);
+      const matchesStatus = !status || student.status === status;
+      const matchesContact =
+        !contact ||
+        (contact === "with-phone" && hasPhone) ||
+        (contact === "without-phone" && !hasPhone);
+      return matchesQuery && matchesStatus && matchesContact;
+    });
+  }
+
+  function getStudentDisplayStatus(student) {
+    if (student.status === "regularized") {
+      return { label: "Regularizado", className: "regularized" };
+    }
+    const hasPhone = Boolean(cleanPhone(student.mother_phone) || cleanPhone(student.father_phone));
+    if (!hasPhone) return { label: "Sin teléfono", className: "no-phone" };
+    return { label: "Pendiente", className: "pending" };
+  }
+
+  function renderStats() {
+    const pending = students.filter((student) => student.status === "pending");
+    const regularized = students.filter((student) => student.status === "regularized");
+    const withPhone = pending.filter((student) => cleanPhone(student.mother_phone) || cleanPhone(student.father_phone));
+    const multiple = pending.filter((student) => (student.pending_months || []).length > 1);
+
+    document.getElementById("statPending").textContent = pending.length;
+    document.getElementById("statWithPhone").textContent = withPhone.length;
+    document.getElementById("statMultipleMonths").textContent = multiple.length;
+    document.getElementById("statRegularized").textContent = regularized.length;
+  }
+
+  function renderSelection() {
+    const count = selectedIds.size;
+    el.selectedCount.textContent = `${count} seleccionado${count === 1 ? "" : "s"}`;
+    el.sendSelectedButton.disabled = count === 0;
+
+    const visibleEligible = getFilteredStudents().filter(
+      (student) =>
+        student.status === "pending" &&
+        (cleanPhone(student.mother_phone) || cleanPhone(student.father_phone))
+    );
+    el.selectAllCheckbox.checked = visibleEligible.length > 0 && visibleEligible.every((student) => selectedIds.has(student.id));
+    el.selectAllCheckbox.indeterminate =
+      visibleEligible.some((student) => selectedIds.has(student.id)) && !el.selectAllCheckbox.checked;
+  }
+
+  function renderTable() {
+    const filtered = getFilteredStudents();
+    el.studentsBody.innerHTML = "";
+    el.emptyState.classList.toggle("hidden", filtered.length > 0);
+    el.tableWrap.classList.toggle("hidden", filtered.length === 0);
+
+    for (const student of filtered) {
+      const status = getStudentDisplayStatus(student);
+      const hasPhone = Boolean(cleanPhone(student.mother_phone) || cleanPhone(student.father_phone));
+      const selectable = student.status === "pending" && hasPhone;
+      const row = document.createElement("tr");
+
+      const motherButton = student.mother_phone
+        ? `<button class="action-button whatsapp" data-action="whatsapp" data-recipient="mother" data-id="${student.id}" type="button">WhatsApp mamá</button>`
+        : "";
+      const fatherButton = student.father_phone
+        ? `<button class="action-button whatsapp" data-action="whatsapp" data-recipient="father" data-id="${student.id}" type="button">WhatsApp papá</button>`
+        : "";
+
+      row.innerHTML = `
+        <td data-label="Seleccionar" class="checkbox-column">
+          <input class="student-checkbox" data-id="${student.id}" type="checkbox" ${selectedIds.has(student.id) ? "checked" : ""} ${selectable ? "" : "disabled"} aria-label="Seleccionar a ${escapeHtml(student.full_name)}">
+        </td>
+        <td data-label="Alumno">
+          <span class="student-name">${escapeHtml(student.full_name)}</span>
+          <span class="subtext">${escapeHtml(student.notes || "Sin observaciones")}</span>
+        </td>
+        <td data-label="Meses pendientes">
+          <div class="month-tags">
+            ${(student.pending_months || []).map((month) => `<span class="month-tag">${escapeHtml(month)}</span>`).join("") || '<span class="subtext">Sin meses pendientes</span>'}
+          </div>
+        </td>
+        <td data-label="Contacto">
+          <div class="contact-list">
+            ${student.mother_phone ? `<a href="tel:${cleanPhone(student.mother_phone)}">Mamá: ${escapeHtml(student.mother_phone)}</a>` : ""}
+            ${student.father_phone ? `<a href="tel:${cleanPhone(student.father_phone)}">Papá: ${escapeHtml(student.father_phone)}</a>` : ""}
+            ${!hasPhone ? '<span class="subtext">Sin teléfono registrado</span>' : ""}
+          </div>
+        </td>
+        <td data-label="Último recordatorio">${escapeHtml(formatDateTime(student.last_reminder_at))}</td>
+        <td data-label="Estado"><span class="status-badge ${status.className}">${status.label}</span></td>
+        <td data-label="Acciones">
+          <div class="actions">
+            ${student.status === "pending" ? motherButton + fatherButton : ""}
+            ${student.status === "pending" ? `<button class="action-button" data-action="copy" data-id="${student.id}" type="button">Copiar mensaje</button>` : ""}
+            <button class="action-button" data-action="call" data-id="${student.id}" type="button">Llamar</button>
+            ${student.status === "pending" ? `<button class="action-button success" data-action="regularize" data-id="${student.id}" type="button">Regularizado</button>` : `<button class="action-button" data-action="restore" data-id="${student.id}" type="button">Volver a pendiente</button>`}
+            <button class="action-button" data-action="edit" data-id="${student.id}" type="button">Editar</button>
+            <button class="action-button danger" data-action="delete" data-id="${student.id}" type="button">Eliminar</button>
+          </div>
+        </td>
+      `;
+      el.studentsBody.appendChild(row);
+    }
+    renderSelection();
+  }
+
+  function renderAll() {
+    renderStats();
+    renderTable();
+  }
+
+  function resetStudentForm() {
+    el.studentForm.reset();
+    el.studentId.value = "";
+    el.studentModalTitle.textContent = "Nuevo alumno";
+  }
+
+  function openStudentEditor(student = null) {
+    resetStudentForm();
+    if (student) {
+      el.studentModalTitle.textContent = "Editar alumno";
+      el.studentId.value = student.id;
+      el.studentName.value = student.full_name;
+      el.motherPhone.value = student.mother_phone || "";
+      el.fatherPhone.value = student.father_phone || "";
+      el.pendingMonths.value = joinNatural(student.pending_months || []);
+      el.studentNotes.value = student.notes || "";
+    }
+    openModal(el.studentModal);
+  }
+
+  async function saveStudent(event) {
+    event.preventDefault();
+    const submitButton = el.studentForm.querySelector('button[type="submit"]');
+    const id = el.studentId.value;
+    const months = parseMonths(el.pendingMonths.value);
+    const motherPhone = cleanPhone(el.motherPhone.value);
+    const fatherPhone = cleanPhone(el.fatherPhone.value);
+
+    if (!months.length) {
+      showToast("Ingresa al menos un mes pendiente.");
+      return;
+    }
+    if (!isValidPhone(motherPhone) || !isValidPhone(fatherPhone)) {
+      showToast("Revisa los teléfonos ingresados.");
+      return;
     }
 
-    row.innerHTML = `
-      <td data-label="Código">
-        <span class="student-code">${escapeHtml(student.codigo)}</span>
-      </td>
-      <td data-label="Alumno">
-        <span class="student-name">${escapeHtml(student.alumno)}</span>
-        <span class="subtext">${escapeHtml(student.notas || "Sin observaciones")}</span>
-      </td>
-      <td data-label="Aula">${escapeHtml(student.aula)}</td>
-      <td data-label="Meses pendientes">
-        <div class="month-tags">
-          ${months.map((month) => `<span class="month-tag">${escapeHtml(month)}</span>`).join("")}
-        </div>
-      </td>
-      <td data-label="Contacto">
-        <div class="contact-links">
-          ${student.telefonoMama ? `<a href="tel:${cleanPhone(student.telefonoMama)}">Mamá: ${escapeHtml(student.telefonoMama)}</a>` : ""}
-          ${student.telefonoPapa ? `<a href="tel:${cleanPhone(student.telefonoPapa)}">Papá: ${escapeHtml(student.telefonoPapa)}</a>` : ""}
-          ${!student.telefonoPrincipal ? `<span class="subtext">Sin teléfono registrado</span>` : ""}
-        </div>
-      </td>
-      <td data-label="Estado"><span class="badge ${status.className}">${status.label}</span></td>
-      <td data-label="Acciones">
-        <div class="actions">
-          ${whatsappButtons.join("")}
-          <button class="action-button secondary" data-action="copy-message" data-id="${student.id}">Copiar mensaje</button>
-          <button class="action-button" data-action="call" data-id="${student.id}">Llamar</button>
-          <button class="action-button success" data-action="toggle-regularized" data-id="${student.id}">${student.regularizado ? "Marcar pendiente" : "Marcar regularizado"}</button>
-          <button class="action-button" data-action="edit" data-id="${student.id}">Editar</button>
-          <button class="action-button danger" data-action="delete" data-id="${student.id}">Eliminar</button>
-        </div>
-      </td>
-    `;
+    const payload = {
+      full_name: el.studentName.value.trim().toUpperCase(),
+      pending_months: months,
+      mother_phone: motherPhone || null,
+      father_phone: fatherPhone || null,
+      status: "pending",
+      notes: el.studentNotes.value.trim()
+    };
 
-    elements.tableBody.appendChild(row);
-  });
-}
-
-function openModal(modal) {
-  modal.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-}
-
-function closeModal(modal) {
-  modal.classList.add("hidden");
-  document.body.style.overflow = "";
-}
-
-function resetStudentForm() {
-  elements.studentForm.reset();
-  document.getElementById("studentId").value = "";
-  document.getElementById("studentModalTitle").textContent = "Nuevo registro";
-}
-
-function openNewStudent() {
-  resetStudentForm();
-  openModal(elements.studentModal);
-}
-
-function openEditStudent(id) {
-  const student = students.find((item) => item.id === id);
-  if (!student) return;
-
-  document.getElementById("studentModalTitle").textContent = "Editar registro";
-  document.getElementById("studentId").value = student.id;
-  document.getElementById("studentCode").value = student.codigo || "";
-  document.getElementById("studentName").value = student.alumno || "";
-  document.getElementById("studentGrade").value = student.aula || "";
-  document.getElementById("phoneMom").value = student.telefonoMama || "";
-  document.getElementById("phoneDad").value = student.telefonoPapa || "";
-  document.getElementById("pendingMonths").value = (student.mesesPendientes || []).join(", ");
-  document.getElementById("notes").value = student.notas || "";
-  openModal(elements.studentModal);
-}
-
-function showToast(message) {
-  clearTimeout(toastTimer);
-  elements.toast.textContent = message;
-  elements.toast.classList.remove("hidden");
-  toastTimer = setTimeout(() => elements.toast.classList.add("hidden"), 2800);
-}
-
-function buildMessage(student) {
-  const replacements = {
-    "{colegio}": settings.schoolName,
-    "{alumno}": student.alumno,
-    "{codigo}": student.codigo,
-    "{aula}": student.aula,
-    "{meses}": joinList(student.mesesPendientes || []),
-    "{guia_pago}": settings.guideUrl
-  };
-
-  let message = settings.template;
-  Object.entries(replacements).forEach(([token, value]) => {
-    message = message.replaceAll(token, value || "");
-  });
-  return message;
-}
-
-function markReminder(student) {
-  student.ultimoRecordatorio = new Date().toISOString();
-  saveStudents();
-}
-
-function openWhatsApp(student, phone) {
-  const normalizedPhone = normalizeWhatsAppPhone(phone);
-  if (!normalizedPhone) {
-    showToast("Este registro no tiene teléfono para WhatsApp.");
-    return;
-  }
-  const message = encodeURIComponent(buildMessage(student));
-  markReminder(student);
-  window.open(`https://wa.me/${normalizedPhone}?text=${message}`, "_blank", "noopener,noreferrer");
-}
-
-async function copyMessage(student) {
-  try {
-    await navigator.clipboard.writeText(buildMessage(student));
-    showToast("Mensaje copiado.");
-  } catch {
-    showToast("No se pudo copiar automáticamente.");
-  }
-}
-
-function exportCsv() {
-  const columns = [
-    "Código",
-    "Alumno",
-    "Aula",
-    "Meses pendientes",
-    "Teléfono mamá",
-    "Teléfono papá",
-    "Teléfono principal",
-    "Estado",
-    "Observaciones"
-  ];
-
-  const rows = students.map((student) => [
-    student.codigo,
-    student.alumno,
-    student.aula,
-    joinList(student.mesesPendientes || []),
-    student.telefonoMama,
-    student.telefonoPapa,
-    student.telefonoPrincipal,
-    getStatus(student).label,
-    student.notas || ""
-  ]);
-
-  const csv = [columns, ...rows]
-    .map((row) => row.map((value) => `"${String(value ?? "").replaceAll('"', '""')}"`).join(","))
-    .join("\n");
-
-  const blob = new Blob(["﻿", csv], { type: "text/csv;charset=utf-8" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `finanzas-kwc-${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-function syncGuidePreview() {
-  elements.guideLinkButton.href = settings.guideUrl || getDefaultGuideUrl();
-}
-
-function openSidebar() {
-  elements.sidebar.classList.add("open");
-  elements.sidebarOverlay.classList.add("visible");
-}
-
-function closeSidebar() {
-  elements.sidebar.classList.remove("open");
-  elements.sidebarOverlay.classList.remove("visible");
-}
-
-document.getElementById("btnNewStudent").addEventListener("click", openNewStudent);
-document.getElementById("btnExport").addEventListener("click", exportCsv);
-document.getElementById("btnOpenSettings").addEventListener("click", () => {
-  closeSidebar();
-  document.getElementById("schoolName").value = settings.schoolName;
-  document.getElementById("guideUrl").value = settings.guideUrl;
-  document.getElementById("messageTemplate").value = settings.template;
-  openModal(elements.settingsModal);
-});
-
-document.getElementById("menuButton").addEventListener("click", openSidebar);
-elements.sidebarClose.addEventListener("click", closeSidebar);
-elements.sidebarOverlay.addEventListener("click", closeSidebar);
-
-elements.searchInput.addEventListener("input", renderTable);
-elements.gradeFilter.addEventListener("change", renderTable);
-elements.statusFilter.addEventListener("change", renderTable);
-elements.contactFilter.addEventListener("change", renderTable);
-
-elements.studentForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-
-  const id = document.getElementById("studentId").value;
-  const phoneMom = cleanPhone(document.getElementById("phoneMom").value);
-  const phoneDad = cleanPhone(document.getElementById("phoneDad").value);
-  const months = parseMonthsInput(document.getElementById("pendingMonths").value);
-
-  if (!months.length) {
-    showToast("Ingresa al menos un mes pendiente.");
-    return;
-  }
-
-  if (!validatePhone(phoneMom) || !validatePhone(phoneDad)) {
-    showToast("Revisa los teléfonos ingresados.");
-    return;
-  }
-
-  const existing = students.find((student) => student.id === id);
-  const student = {
-    id: id || crypto.randomUUID(),
-    codigo: document.getElementById("studentCode").value.trim().toUpperCase(),
-    alumno: document.getElementById("studentName").value.trim().toUpperCase(),
-    aula: document.getElementById("studentGrade").value.trim(),
-    telefonoMama: phoneMom,
-    telefonoPapa: phoneDad,
-    telefonoPrincipal: phoneMom || phoneDad,
-    telefonoAlterno: phoneMom && phoneDad ? phoneDad : "",
-    mesesPendientes: months,
-    notas: document.getElementById("notes").value.trim(),
-    regularizado: existing?.regularizado ?? false,
-    ultimoRecordatorio: existing?.ultimoRecordatorio ?? ""
-  };
-
-  if (id) {
-    students = students.map((item) => item.id === id ? student : item);
-    showToast("Registro actualizado.");
-  } else {
-    students.unshift(student);
-    showToast("Registro agregado.");
-  }
-
-  saveStudents();
-  closeModal(elements.studentModal);
-  render();
-});
-
-elements.settingsForm.addEventListener("submit", (event) => {
-  event.preventDefault();
-  settings = {
-    schoolName: document.getElementById("schoolName").value.trim() || "KAROL WOJTYLA COLLEGE",
-    guideUrl: document.getElementById("guideUrl").value.trim() || getDefaultGuideUrl(),
-    template: document.getElementById("messageTemplate").value.trim() || defaultTemplate
-  };
-  saveSettings();
-  closeModal(elements.settingsModal);
-  syncGuidePreview();
-  showToast("Configuración guardada.");
-});
-
-elements.tableBody.addEventListener("click", (event) => {
-  const button = event.target.closest("button[data-action]");
-  if (!button) return;
-
-  const student = students.find((item) => item.id === button.dataset.id);
-  if (!student) return;
-
-  switch (button.dataset.action) {
-    case "whatsapp-mom":
-      openWhatsApp(student, student.telefonoMama);
-      break;
-    case "whatsapp-dad":
-      openWhatsApp(student, student.telefonoPapa);
-      break;
-    case "whatsapp-main":
-      openWhatsApp(student, student.telefonoPrincipal);
-      break;
-    case "copy-message":
-      copyMessage(student);
-      break;
-    case "call": {
-      const phone = cleanPhone(student.telefonoPrincipal || student.telefonoPapa || student.telefonoMama);
-      if (!phone) {
-        showToast("Este registro no tiene teléfono para llamar.");
-        return;
+    setLoading(submitButton, true, "Guardando...");
+    try {
+      let error;
+      if (id) {
+        ({ error } = await db.from("students").update(payload).eq("id", id));
+      } else {
+        ({ error } = await db.from("students").insert(payload));
       }
-      window.location.href = `tel:${phone}`;
-      break;
+      if (error) throw error;
+      closeModal(el.studentModal);
+      await loadStudents();
+      showToast(id ? "Alumno actualizado." : "Alumno registrado.");
+    } catch (error) {
+      console.error(error);
+      showToast(error.message || "No se pudo guardar el alumno.");
+    } finally {
+      setLoading(submitButton, false);
     }
-    case "toggle-regularized":
-      student.regularizado = !student.regularizado;
-      if (student.regularizado) {
-        student.mesesPendientes = [];
-      }
-      saveStudents();
-      render();
-      showToast(student.regularizado ? "Alumno marcado como regularizado." : "Alumno marcado como pendiente.");
-      break;
-    case "edit":
-      openEditStudent(student.id);
-      break;
-    case "delete":
-      if (confirm(`¿Eliminar a ${student.alumno}?`)) {
-        students = students.filter((item) => item.id !== student.id);
-        saveStudents();
-        render();
-        showToast("Registro eliminado.");
-      }
-      break;
   }
-});
 
-document.querySelectorAll("[data-close]").forEach((button) => {
-  button.addEventListener("click", () => closeModal(document.getElementById(button.dataset.close)));
-});
+  async function saveSettings(event) {
+    event.preventDefault();
+    const submitButton = el.settingsForm.querySelector('button[type="submit"]');
+    setLoading(submitButton, true, "Guardando...");
+    try {
+      const payload = {
+        school_name: el.schoolName.value.trim(),
+        message_template: el.messageTemplate.value.trim(),
+        updated_at: new Date().toISOString()
+      };
+      const { error } = await db.from("app_settings").update(payload).eq("id", 1);
+      if (error) throw error;
+      appSettings = payload;
+      closeModal(el.settingsModal);
+      showToast("Configuración actualizada.");
+    } catch (error) {
+      console.error(error);
+      showToast(error.message || "No se pudo guardar la configuración.");
+    } finally {
+      setLoading(submitButton, false);
+    }
+  }
 
-document.querySelectorAll(".modal-backdrop").forEach((modal) => {
-  modal.addEventListener("click", (event) => {
-    if (event.target === modal) closeModal(modal);
+  async function markReminderOpened(student, recipientType, phone, message) {
+    const now = new Date().toISOString();
+    const { error: logError } = await db.from("reminder_logs").insert({
+      student_id: student.id,
+      recipient_type: recipientType,
+      phone,
+      message_snapshot: message,
+      action_status: "opened"
+    });
+    if (logError) console.warn("No se pudo guardar el historial:", logError.message);
+
+    const { error: updateError } = await db
+      .from("students")
+      .update({ last_reminder_at: now })
+      .eq("id", student.id);
+    if (updateError) console.warn("No se pudo actualizar el último recordatorio:", updateError.message);
+
+    student.last_reminder_at = now;
+    renderTable();
+  }
+
+  async function openWhatsApp(student, recipientType) {
+    const phone = recipientType === "mother" ? student.mother_phone : student.father_phone;
+    const normalized = normalizeWhatsAppPhone(phone);
+    if (!normalized) {
+      showToast("Este contacto no tiene un teléfono válido.");
+      return;
+    }
+    const message = buildMessage(student);
+    await markReminderOpened(student, recipientType, cleanPhone(phone), message);
+    window.open(`https://wa.me/${normalized}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  }
+
+  async function copyMessage(student) {
+    try {
+      await navigator.clipboard.writeText(buildMessage(student));
+      showToast("Mensaje copiado.");
+    } catch {
+      showToast("No se pudo copiar automáticamente.");
+    }
+  }
+
+  async function updateStudentStatus(student, status) {
+    let pendingMonths = student.pending_months || [];
+    if (status === "regularized") pendingMonths = [];
+    if (status === "pending" && pendingMonths.length === 0) {
+      const input = prompt("Escribe los meses pendientes separados por comas:");
+      if (!input) return;
+      pendingMonths = parseMonths(input);
+      if (!pendingMonths.length) return;
+    }
+
+    const { error } = await db
+      .from("students")
+      .update({ status, pending_months: pendingMonths })
+      .eq("id", student.id);
+    if (error) throw error;
+    selectedIds.delete(student.id);
+    await loadStudents();
+    showToast(status === "regularized" ? "Alumno marcado como regularizado." : "Alumno marcado como pendiente.");
+  }
+
+  async function deleteStudent(student) {
+    const confirmed = confirm(`¿Eliminar a ${student.full_name}? Esta acción no se puede deshacer.`);
+    if (!confirmed) return;
+    const { error } = await db.from("students").delete().eq("id", student.id);
+    if (error) throw error;
+    selectedIds.delete(student.id);
+    await loadStudents();
+    showToast("Registro eliminado.");
+  }
+
+  function getQueueRecipient(student) {
+    if (cleanPhone(student.mother_phone)) {
+      return { recipientType: "mother", label: "Mamá", phone: student.mother_phone };
+    }
+    return { recipientType: "father", label: "Papá", phone: student.father_phone };
+  }
+
+  function startQueue() {
+    queueItems = [...selectedIds]
+      .map((id) => students.find((student) => student.id === id))
+      .filter(Boolean)
+      .filter((student) => student.status === "pending")
+      .map((student) => ({ student, ...getQueueRecipient(student) }))
+      .filter((item) => cleanPhone(item.phone));
+
+    if (!queueItems.length) {
+      showToast("No hay contactos válidos seleccionados.");
+      return;
+    }
+    queueIndex = 0;
+    renderQueue();
+    openModal(el.queueModal);
+  }
+
+  function renderQueue() {
+    const item = queueItems[queueIndex];
+    if (!item) {
+      closeModal(el.queueModal);
+      selectedIds.clear();
+      renderSelection();
+      showToast("Cola finalizada.");
+      return;
+    }
+    el.queueProgress.textContent = `${queueIndex + 1} de ${queueItems.length}`;
+    el.queueStudentName.textContent = item.student.full_name;
+    el.queueRecipient.textContent = `${item.label}: ${item.phone}`;
+    el.queueMessagePreview.textContent = buildMessage(item.student);
+    el.queuePreviousButton.disabled = queueIndex === 0;
+    el.queueNextButton.textContent = queueIndex === queueItems.length - 1 ? "Finalizar" : "Siguiente";
+  }
+
+  async function openCurrentQueueWhatsApp() {
+    const item = queueItems[queueIndex];
+    if (!item) return;
+    const normalized = normalizeWhatsAppPhone(item.phone);
+    const message = buildMessage(item.student);
+    await markReminderOpened(item.student, item.recipientType, cleanPhone(item.phone), message);
+    window.open(`https://wa.me/${normalized}?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+  }
+
+  function exportCsv() {
+    const headers = [
+      "Alumno",
+      "Meses pendientes",
+      "Teléfono mamá",
+      "Teléfono papá",
+      "Estado",
+      "Último recordatorio",
+      "Observaciones"
+    ];
+    const rows = students.map((student) => [
+      student.full_name,
+      joinNatural(student.pending_months || []),
+      student.mother_phone || "",
+      student.father_phone || "",
+      student.status === "regularized" ? "Regularizado" : "Pendiente",
+      formatDateTime(student.last_reminder_at),
+      student.notes || ""
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
+      .join("\n");
+    const blob = new Blob(["\uFEFF", csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `cobranzas-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function handleLogin(event) {
+    event.preventDefault();
+    if (!configReady) {
+      el.setupAlert.classList.remove("hidden");
+      el.loginMessage.textContent = "Primero configura Supabase en config.js.";
+      return;
+    }
+    setLoading(el.loginButton, true, "Ingresando...");
+    el.loginMessage.textContent = "";
+    try {
+      const { data, error } = await db.auth.signInWithPassword({
+        email: el.loginEmail.value.trim(),
+        password: el.loginPassword.value
+      });
+      if (error) throw error;
+      session = data.session;
+      await initializeApp();
+    } catch (error) {
+      console.error(error);
+      el.loginMessage.textContent = error.message || "Correo o contraseña incorrectos.";
+    } finally {
+      setLoading(el.loginButton, false);
+    }
+  }
+
+  async function logout() {
+    await db.auth.signOut();
+    session = null;
+    students = [];
+    selectedIds.clear();
+    el.loginPassword.value = "";
+    showLogin();
+  }
+
+  function bindEvents() {
+    el.loginForm.addEventListener("submit", handleLogin);
+    el.menuButton.addEventListener("click", openSidebar);
+    el.sidebarClose.addEventListener("click", closeSidebar);
+    el.sidebarOverlay.addEventListener("click", closeSidebar);
+    el.logoutButton.addEventListener("click", logout);
+    el.newStudentButton.addEventListener("click", () => openStudentEditor());
+    el.studentForm.addEventListener("submit", saveStudent);
+    el.settingsForm.addEventListener("submit", saveSettings);
+    el.schoolName.addEventListener("input", updateMessagePreview);
+    el.messageTemplate.addEventListener("input", updateMessagePreview);
+    el.exportButton.addEventListener("click", exportCsv);
+
+    el.settingsButton.addEventListener("click", () => {
+      closeSidebar();
+      el.schoolName.value = appSettings.school_name;
+      el.messageTemplate.value = appSettings.message_template;
+      updateMessagePreview();
+      openModal(el.settingsModal);
+    });
+
+    el.searchInput.addEventListener("input", renderTable);
+    el.statusFilter.addEventListener("change", renderTable);
+    el.contactFilter.addEventListener("change", renderTable);
+
+    el.studentsBody.addEventListener("change", (event) => {
+      const checkbox = event.target.closest(".student-checkbox");
+      if (!checkbox) return;
+      if (checkbox.checked) selectedIds.add(checkbox.dataset.id);
+      else selectedIds.delete(checkbox.dataset.id);
+      renderSelection();
+    });
+
+    el.studentsBody.addEventListener("click", async (event) => {
+      const button = event.target.closest("button[data-action]");
+      if (!button) return;
+      const student = students.find((item) => item.id === button.dataset.id);
+      if (!student) return;
+
+      try {
+        switch (button.dataset.action) {
+          case "whatsapp":
+            await openWhatsApp(student, button.dataset.recipient);
+            break;
+          case "copy":
+            await copyMessage(student);
+            break;
+          case "call": {
+            const phone = cleanPhone(student.mother_phone) || cleanPhone(student.father_phone);
+            if (!phone) showToast("Este alumno no tiene teléfono registrado.");
+            else window.location.href = `tel:${phone}`;
+            break;
+          }
+          case "regularize":
+            await updateStudentStatus(student, "regularized");
+            break;
+          case "restore":
+            await updateStudentStatus(student, "pending");
+            break;
+          case "edit":
+            openStudentEditor(student);
+            break;
+          case "delete":
+            await deleteStudent(student);
+            break;
+        }
+      } catch (error) {
+        console.error(error);
+        showToast(error.message || "No se pudo completar la acción.");
+      }
+    });
+
+    el.selectAllCheckbox.addEventListener("change", () => {
+      const eligible = getFilteredStudents().filter(
+        (student) =>
+          student.status === "pending" &&
+          (cleanPhone(student.mother_phone) || cleanPhone(student.father_phone))
+      );
+      if (el.selectAllCheckbox.checked) eligible.forEach((student) => selectedIds.add(student.id));
+      else eligible.forEach((student) => selectedIds.delete(student.id));
+      renderTable();
+    });
+
+    el.selectVisibleButton.addEventListener("click", () => {
+      getFilteredStudents()
+        .filter(
+          (student) =>
+            student.status === "pending" &&
+            (cleanPhone(student.mother_phone) || cleanPhone(student.father_phone))
+        )
+        .forEach((student) => selectedIds.add(student.id));
+      renderTable();
+    });
+
+    el.clearSelectionButton.addEventListener("click", () => {
+      selectedIds.clear();
+      renderTable();
+    });
+    el.sendSelectedButton.addEventListener("click", startQueue);
+    el.queueOpenWhatsAppButton.addEventListener("click", openCurrentQueueWhatsApp);
+    el.queuePreviousButton.addEventListener("click", () => {
+      if (queueIndex > 0) queueIndex -= 1;
+      renderQueue();
+    });
+    el.queueNextButton.addEventListener("click", () => {
+      queueIndex += 1;
+      renderQueue();
+    });
+
+    document.querySelectorAll("[data-close]").forEach((button) => {
+      button.addEventListener("click", () => closeModal(document.getElementById(button.dataset.close)));
+    });
+    document.querySelectorAll(".modal-backdrop").forEach((modal) => {
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closeModal(modal);
+      });
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape") return;
+      document.querySelectorAll(".modal-backdrop:not(.hidden)").forEach(closeModal);
+      closeSidebar();
+    });
+  }
+
+  async function boot() {
+    bindEvents();
+    if (!configReady) {
+      el.setupAlert.classList.remove("hidden");
+      el.loginForm.querySelectorAll("input, button").forEach((input) => (input.disabled = true));
+      return;
+    }
+
+    db = window.supabase.createClient(config.SUPABASE_URL, config.SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true
+      }
+    });
+
+    db.auth.onAuthStateChange((event, nextSession) => {
+      session = nextSession;
+      if (event === "SIGNED_OUT") showLogin();
+    });
+
+    const { data, error } = await db.auth.getSession();
+    if (error) {
+      showLogin(error.message);
+      return;
+    }
+    session = data.session;
+    if (session) await initializeApp();
+    else showLogin();
+  }
+
+  boot().catch((error) => {
+    console.error(error);
+    showLogin("No se pudo iniciar el sistema.");
   });
-});
-
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    document.querySelectorAll(".modal-backdrop:not(.hidden)").forEach(closeModal);
-    closeSidebar();
-  }
-});
-
-render();
+})();
