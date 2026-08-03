@@ -3,36 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="theme-color" content="#0f766e" />
-  <title>Cobranza Escolar</title>
-  <link rel="stylesheet" href="styles.css?v=2" />
+  <meta name="theme-color" content="#0f4c81" />
+  <title>Finanzas y Cobranzas | Karol Wojtyla College</title>
+  <link rel="stylesheet" href="styles.css?v=final1" />
 </head>
 <body>
   <div class="app-shell">
     <aside class="sidebar" id="sidebar" aria-label="Menú principal">
       <button class="sidebar-close" id="sidebarClose" type="button" aria-label="Cerrar menú">×</button>
+
       <div class="brand">
-        <div class="brand-icon">CE</div>
+        <div class="brand-icon">KW</div>
         <div>
-          <strong>Cobranza Escolar</strong>
-          <span>Gestión de mensualidades</span>
+          <strong>Karol Wojtyla College</strong>
+          <span>Panel de finanzas y seguimiento</span>
         </div>
       </div>
 
       <nav class="nav-list">
-        <button class="nav-item active" type="button">
-          <span>▦</span> Panel principal
-        </button>
-        <button class="nav-item" id="btnOpenSettings" type="button">
-          <span>⚙</span> Configuración
-        </button>
+        <button class="nav-item active" type="button">▦ Panel principal</button>
+        <button class="nav-item" id="btnOpenSettings" type="button">⚙ Configuración</button>
       </nav>
 
       <div class="sidebar-note">
-        <strong>Importante</strong>
-        <p>Esta versión guarda los datos únicamente en este navegador.</p>
+        <strong>Base precargada</strong>
+        <p>Esta versión ya incluye la base inicial de alumnos con cuotas pendientes y teléfonos cargados desde tus archivos.</p>
       </div>
     </aside>
+
     <button class="sidebar-overlay" id="sidebarOverlay" type="button" aria-label="Cerrar menú"></button>
 
     <main class="main-content">
@@ -40,38 +38,38 @@
         <button class="menu-button" id="menuButton" type="button" aria-label="Abrir menú">☰</button>
         <div>
           <h1>Panel de cobranzas</h1>
-          <p>Consulta deudas y contacta a los apoderados rápidamente.</p>
+          <p>Consulta alumnos con cuotas pendientes y envía recordatorios por WhatsApp.</p>
         </div>
-        <button class="primary-button" id="btnNewStudent" type="button">+ Nuevo alumno</button>
+        <button class="primary-button" id="btnNewStudent" type="button">+ Nuevo registro</button>
       </header>
 
-      <section class="stats-grid" aria-label="Resumen de cobranzas">
+      <section class="stats-grid" aria-label="Resumen de seguimiento">
         <article class="stat-card">
-          <div class="stat-icon">👨‍🎓</div>
+          <div class="stat-icon">📚</div>
           <div>
-            <span>Total de alumnos</span>
-            <strong id="statStudents">0</strong>
-          </div>
-        </article>
-        <article class="stat-card">
-          <div class="stat-icon">⏳</div>
-          <div>
-            <span>Deudas pendientes</span>
+            <span>Alumnos pendientes</span>
             <strong id="statPending">0</strong>
           </div>
         </article>
         <article class="stat-card">
-          <div class="stat-icon">S/</div>
+          <div class="stat-icon">📱</div>
           <div>
-            <span>Monto por cobrar</span>
-            <strong id="statDebt">S/ 0.00</strong>
+            <span>Con teléfono</span>
+            <strong id="statWithPhone">0</strong>
           </div>
         </article>
         <article class="stat-card">
-          <div class="stat-icon">✓</div>
+          <div class="stat-icon">🗓</div>
           <div>
-            <span>Al día</span>
-            <strong id="statPaid">0</strong>
+            <span>Más de un mes pendiente</span>
+            <strong id="statMultipleMonths">0</strong>
+          </div>
+        </article>
+        <article class="stat-card">
+          <div class="stat-icon">✅</div>
+          <div>
+            <span>Regularizados</span>
+            <strong id="statRegularized">0</strong>
           </div>
         </article>
       </section>
@@ -79,8 +77,8 @@
       <section class="panel">
         <div class="panel-heading">
           <div>
-            <h2>Alumnos y pagos</h2>
-            <p>Busca, filtra y envía recordatorios por WhatsApp.</p>
+            <h2>Seguimiento de alumnos</h2>
+            <p>Mensaje profesional sin montos. Incluye meses pendientes y la guía de pago.</p>
           </div>
           <div class="panel-actions">
             <button class="secondary-button" id="btnExport" type="button">Exportar CSV</button>
@@ -90,31 +88,35 @@
         <div class="filters">
           <label class="search-field">
             <span>⌕</span>
-            <input id="searchInput" type="search" placeholder="Buscar alumno, apoderado, DNI o teléfono" />
+            <input id="searchInput" type="search" placeholder="Buscar por alumno, código, aula o teléfono" />
           </label>
 
-          <select id="gradeFilter" aria-label="Filtrar por grado">
-            <option value="">Todos los grados</option>
+          <select id="gradeFilter" aria-label="Filtrar por aula">
+            <option value="">Todas las aulas</option>
           </select>
 
           <select id="statusFilter" aria-label="Filtrar por estado">
             <option value="">Todos los estados</option>
-            <option value="pendiente">Con deuda</option>
-            <option value="pagado">Al día</option>
-            <option value="vencido">Vencido</option>
+            <option value="pendiente">Pendientes</option>
+            <option value="regularizado">Regularizados</option>
+          </select>
+
+          <select id="contactFilter" aria-label="Filtrar por contacto">
+            <option value="">Todos los contactos</option>
+            <option value="con-telefono">Con teléfono</option>
+            <option value="sin-telefono">Sin teléfono</option>
           </select>
         </div>
 
-        <div class="table-wrap">
+        <div class="table-wrap" id="tableWrap">
           <table>
             <thead>
               <tr>
+                <th>Código</th>
                 <th>Alumno</th>
-                <th>Grado</th>
-                <th>Apoderado</th>
+                <th>Aula</th>
+                <th>Meses pendientes</th>
                 <th>Contacto</th>
-                <th>Mensualidad</th>
-                <th>Vencimiento</th>
                 <th>Estado</th>
                 <th>Acciones</th>
               </tr>
@@ -126,7 +128,20 @@
         <div class="empty-state hidden" id="emptyState">
           <div>📭</div>
           <h3>No hay resultados</h3>
-          <p>Agrega un alumno o cambia los filtros de búsqueda.</p>
+          <p>Prueba cambiando los filtros o registra un nuevo alumno.</p>
+        </div>
+      </section>
+
+      <section class="guide-panel">
+        <div class="guide-header">
+          <div>
+            <h2>Guía de pago</h2>
+            <p>La URL de esta imagen se incluye automáticamente en el mensaje de WhatsApp.</p>
+          </div>
+          <a class="secondary-button link-button" id="guideLinkButton" href="assets/guia-pago-bcp.jpg" target="_blank" rel="noopener">Ver imagen completa</a>
+        </div>
+        <div class="guide-card">
+          <img src="assets/guia-pago-bcp.jpg" alt="Guía de pago en agentes BCP" class="guide-image" />
         </div>
       </section>
     </main>
@@ -136,8 +151,8 @@
     <div class="modal-card large">
       <div class="modal-header">
         <div>
-          <h2 id="studentModalTitle">Nuevo alumno</h2>
-          <p>Registra los datos necesarios para gestionar la cobranza.</p>
+          <h2 id="studentModalTitle">Nuevo registro</h2>
+          <p>Edita o agrega un alumno para el seguimiento de pagos.</p>
         </div>
         <button class="icon-button" data-close="studentModal" type="button" aria-label="Cerrar">×</button>
       </div>
@@ -146,54 +161,38 @@
         <input type="hidden" id="studentId" />
         <div class="form-grid">
           <label>
-            <span>Nombres del alumno *</span>
-            <input id="studentFirstName" required maxlength="80" />
+            <span>Código del alumno *</span>
+            <input id="studentCode" required maxlength="20" />
           </label>
           <label>
-            <span>Apellidos del alumno *</span>
-            <input id="studentLastName" required maxlength="80" />
+            <span>Nombre completo del alumno *</span>
+            <input id="studentName" required maxlength="120" />
           </label>
           <label>
-            <span>DNI del alumno</span>
-            <input id="studentDni" inputmode="numeric" maxlength="8" placeholder="8 dígitos" />
+            <span>Aula *</span>
+            <input id="studentGrade" required maxlength="30" placeholder="Ej. 3 Años o 2º Grado" />
           </label>
           <label>
-            <span>Grado y sección *</span>
-            <input id="studentGrade" required maxlength="30" placeholder="Ej. 3ro A" />
+            <span>Teléfono mamá</span>
+            <input id="phoneMom" inputmode="tel" maxlength="20" placeholder="Ej. 987654321" />
           </label>
           <label>
-            <span>Nombre del apoderado *</span>
-            <input id="guardianName" required maxlength="100" />
+            <span>Teléfono papá</span>
+            <input id="phoneDad" inputmode="tel" maxlength="20" placeholder="Ej. 987654321" />
           </label>
-          <label>
-            <span>Teléfono del apoderado *</span>
-            <input id="guardianPhone" required inputmode="tel" maxlength="15" placeholder="Ej. 987654321" />
-          </label>
-          <label>
-            <span>Correo del apoderado</span>
-            <input id="guardianEmail" type="email" maxlength="100" />
-          </label>
-          <label>
-            <span>Mes de la mensualidad *</span>
-            <input id="paymentMonth" required maxlength="30" placeholder="Ej. Julio 2026" />
-          </label>
-          <label>
-            <span>Monto pendiente (S/) *</span>
-            <input id="debtAmount" required type="number" min="0" step="0.01" />
-          </label>
-          <label>
-            <span>Fecha de vencimiento *</span>
-            <input id="dueDate" required type="date" />
+          <label class="full-width">
+            <span>Meses pendientes *</span>
+            <input id="pendingMonths" required maxlength="150" placeholder="Ej. Abril, Mayo, Junio" />
           </label>
           <label class="full-width">
             <span>Observaciones</span>
-            <textarea id="notes" rows="3" maxlength="250" placeholder="Ej. Se comprometió a pagar el viernes"></textarea>
+            <textarea id="notes" rows="3" maxlength="250" placeholder="Ej. Se llamó al apoderado el lunes"></textarea>
           </label>
         </div>
 
         <div class="modal-footer">
           <button class="secondary-button" data-close="studentModal" type="button">Cancelar</button>
-          <button class="primary-button" type="submit">Guardar alumno</button>
+          <button class="primary-button" type="submit">Guardar cambios</button>
         </div>
       </form>
     </div>
@@ -204,7 +203,7 @@
       <div class="modal-header">
         <div>
           <h2 id="settingsTitle">Configuración</h2>
-          <p>Personaliza el nombre del colegio y el mensaje de cobranza.</p>
+          <p>Personaliza el nombre del colegio, la plantilla del mensaje y el enlace de la guía de pago.</p>
         </div>
         <button class="icon-button" data-close="settingsModal" type="button" aria-label="Cerrar">×</button>
       </div>
@@ -215,13 +214,16 @@
           <input id="schoolName" maxlength="100" />
         </label>
         <label>
-          <span>Plantilla del mensaje</span>
-          <textarea id="messageTemplate" rows="9"></textarea>
+          <span>URL de guía de pago</span>
+          <input id="guideUrl" maxlength="250" />
         </label>
-        <p class="template-help">
-          Puedes usar: <code>{apoderado}</code>, <code>{alumno}</code>, <code>{monto}</code>,
-          <code>{mes}</code>, <code>{vencimiento}</code> y <code>{colegio}</code>.
-        </p>
+        <label>
+          <span>Plantilla del mensaje</span>
+          <textarea id="messageTemplate" rows="10"></textarea>
+        </label>
+        <div class="template-help">
+          Variables disponibles: <code>{colegio}</code>, <code>{alumno}</code>, <code>{codigo}</code>, <code>{aula}</code>, <code>{meses}</code>, <code>{guia_pago}</code>
+        </div>
         <div class="modal-footer">
           <button class="secondary-button" data-close="settingsModal" type="button">Cancelar</button>
           <button class="primary-button" type="submit">Guardar configuración</button>
@@ -230,8 +232,8 @@
     </div>
   </div>
 
-  <div class="toast hidden" id="toast"></div>
+  <div class="toast hidden" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=final1"></script>
 </body>
 </html>
